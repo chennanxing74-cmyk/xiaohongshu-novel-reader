@@ -1,0 +1,437 @@
+{% extends "xiaohongshu_base.html" %}
+
+{% block title %}{{ chapter.title }} - {{ novel.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- 阅读内容区域 -->
+        <div class="col-lg-8 offset-lg-2">
+            <div class="xhs-card mb-4">
+                <!-- 章节头部信息 -->
+                <div class="card-header xhs-gradient-bg text-white">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="mb-0">{{ chapter.title }}</h4>
+                            <small class="opacity-75">
+                                <i class="fas fa-book"></i> {{ novel.title }} · {{ novel.author }}
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex align-items-center justify-content-end gap-3">
+                                <span class="badge bg-light text-dark">
+                                    第 {{ chapter.number }} / {{ total_chapters }} 章
+                                </span>
+                                <span class="badge bg-light text-dark">
+                                    <i class="fas fa-file-alt"></i> {{ "%.1f"|format(chapter.word_count / 1000) }}K字
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 阅读进度条 -->
+                    <div class="progress mt-3" style="height: 4px;">
+                        {% set progress = (chapter.number / total_chapters * 100) %}
+                        <div class="progress-bar bg-light" role="progressbar" 
+                             style="width: {{ progress }}%"></div>
+                    </div>
+                </div>
+                
+                <!-- 章节内容 -->
+                <div class="card-body" style="padding: 40px;">
+                    <div class="reading-content" id="readingContent" 
+                         style="font-size: 18px; line-height: 2; color: #333; max-width: 800px; margin: 0 auto;">
+                        {% for paragraph in content.split('\n\n') %}
+                            {% if paragraph.strip() %}
+                            <p class="mb-4" style="text-indent: 2em;">{{ paragraph.strip() }}</p>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- 章节底部导航 -->
+                <div class="card-footer bg-transparent">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            {% if prev_chapter %}
+                            <a href="/read/{{ novel.id }}/{{ prev_chapter.number }}" 
+                               class="xhs-btn xhs-btn-outline w-100">
+                                <i class="fas fa-chevron-left"></i> 上一章
+                            </a>
+                            {% else %}
+                            <button class="xhs-btn xhs-btn-outline w-100" disabled>
+                                <i class="fas fa-chevron-left"></i> 已是第一章
+                            </button>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 text-center">
+                            <a href="/novel/{{ novel.id }}" class="xhs-btn xhs-btn-outline">
+                                <i class="fas fa-list"></i> 目录
+                            </a>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            {% if next_chapter %}
+                            <a href="/read/{{ novel.id }}/{{ next_chapter.number }}" 
+                               class="xhs-btn xhs-btn-primary w-100">
+                                下一章 <i class="fas fa-chevron-right"></i>
+                            </a>
+                            {% else %}
+                            <button class="xhs-btn xhs-btn-outline w-100" disabled>
+                                已是最后一章 <i class="fas fa-chevron-right"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 小红书风格互动区域 -->
+            <div class="xhs-card">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-3">
+                            <button class="btn btn-link text-decoration-none" onclick="likeChapter()">
+                                <i class="fas fa-heart fa-2x xhs-heart" id="likeIcon"></i>
+                                <div class="small mt-1">点赞</div>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-link text-decoration-none" onclick="collectChapter()">
+                                <i class="fas fa-bookmark fa-2x text-warning"></i>
+                                <div class="small mt-1">收藏</div>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-link text-decoration-none" onclick="shareChapter()">
+                                <i class="fas fa-share-alt fa-2x text-info"></i>
+                                <div class="small mt-1">分享</div>
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-link text-decoration-none" onclick="showSettings()">
+                                <i class="fas fa-cog fa-2x text-secondary"></i>
+                                <div class="small mt-1">设置</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 小红书风格阅读设置面板 -->
+<div class="position-fixed top-50 end-0 translate-middle-y" style="z-index: 1000;" id="settingsPanel">
+    <div class="xhs-card" style="width: 250px; margin-right: 20px; display: none;">
+        <div class="card-header">
+            <h6 class="mb-0">
+                <i class="fas fa-palette"></i> 阅读设置
+            </h6>
+        </div>
+        <div class="card-body">
+            <!-- 字体大小 -->
+            <div class="mb-3">
+                <label class="form-label small">字体大小</label>
+                <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setFontSize(16)">小</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setFontSize(18)">中</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setFontSize(20)">大</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setFontSize(22)">特大</button>
+                </div>
+            </div>
+            
+            <!-- 行间距 -->
+            <div class="mb-3">
+                <label class="form-label small">行间距</label>
+                <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setLineHeight(1.6)">紧凑</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setLineHeight(2.0)">标准</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setLineHeight(2.4)">宽松</button>
+                </div>
+            </div>
+            
+            <!-- 背景主题 -->
+            <div class="mb-3">
+                <label class="form-label small">背景主题</label>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm flex-fill" onclick="setTheme('light')">
+                        <i class="fas fa-sun"></i> 日间
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm flex-fill" onclick="setTheme('dark')">
+                        <i class="fas fa-moon"></i> 夜间
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm flex-fill" onclick="setTheme('sepia')">
+                        <i class="fas fa-leaf"></i> 护眼
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 移动端底部导航栏 -->
+<div class="d-lg-none fixed-bottom bg-white border-top" style="z-index: 1000;">
+    <div class="container-fluid py-2">
+        <div class="row text-center">
+            <div class="col-2">
+                {% if prev_chapter %}
+                <a href="/read/{{ novel.id }}/{{ prev_chapter.number }}" 
+                   class="btn btn-link text-decoration-none">
+                    <i class="fas fa-chevron-left"></i>
+                    <div class="small">上一章</div>
+                </a>
+                {% else %}
+                <button class="btn btn-link text-decoration-none" disabled>
+                    <i class="fas fa-chevron-left text-muted"></i>
+                    <div class="small text-muted">上一章</div>
+                </button>
+                {% endif %}
+            </div>
+            
+            <div class="col-2">
+                <button class="btn btn-link text-decoration-none" onclick="setFontSize('smaller')">
+                    <i class="fas fa-minus"></i>
+                    <div class="small">字体</div>
+                </button>
+            </div>
+            
+            <div class="col-2">
+                <button class="btn btn-link text-decoration-none" onclick="setFontSize('larger')">
+                    <i class="fas fa-plus"></i>
+                    <div class="small">字体</div>
+                </button>
+            </div>
+            
+            <div class="col-2">
+                <a href="/novel/{{ novel.id }}" class="btn btn-link text-decoration-none">
+                    <i class="fas fa-list"></i>
+                    <div class="small">目录</div>
+                </a>
+            </div>
+            
+            <div class="col-2">
+                <button class="btn btn-link text-decoration-none" onclick="showSettings()">
+                    <i class="fas fa-cog"></i>
+                    <div class="small">设置</div>
+                </button>
+            </div>
+            
+            <div class="col-2">
+                {% if next_chapter %}
+                <a href="/read/{{ novel.id }}/{{ next_chapter.number }}" 
+                   class="btn btn-link text-decoration-none">
+                    <i class="fas fa-chevron-right"></i>
+                    <div class="small">下一章</div>
+                </a>
+                {% else %}
+                <button class="btn btn-link text-decoration-none" disabled>
+                    <i class="fas fa-chevron-right text-muted"></i>
+                    <div class="small text-muted">下一章</div>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentFontSize = 18;
+let currentLineHeight = 2.0;
+
+// 点赞章节
+function likeChapter() {
+    const likeIcon = document.getElementById('likeIcon');
+    likeIcon.classList.toggle('liked');
+    
+    if (likeIcon.classList.contains('liked')) {
+        showToast('章节点赞成功！', 'success');
+    } else {
+        showToast('取消点赞', 'info');
+    }
+}
+
+// 收藏章节
+function collectChapter() {
+    showToast('章节已添加到书签！', 'success');
+}
+
+// 分享章节
+function shareChapter() {
+    const url = window.location.href;
+    const title = document.querySelector('h4').textContent;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            text: '分享一个精彩的章节给你！',
+            url: url
+        });
+    } else {
+        navigator.clipboard.writeText(url).then(() => {
+            showToast('链接已复制到剪贴板！', 'success');
+        });
+    }
+}
+
+// 显示/隐藏设置面板
+function showSettings() {
+    const panel = document.querySelector('#settingsPanel .xhs-card');
+    if (panel.style.display === 'none') {
+        panel.style.display = 'block';
+        panel.style.animation = 'slideInRight 0.3s ease';
+    } else {
+        panel.style.display = 'none';
+    }
+}
+
+// 设置字体大小
+function setFontSize(size) {
+    const content = document.getElementById('readingContent');
+    
+    if (size === 'smaller') {
+        currentFontSize = Math.max(14, currentFontSize - 2);
+    } else if (size === 'larger') {
+        currentFontSize = Math.min(24, currentFontSize + 2);
+    } else {
+        currentFontSize = size;
+    }
+    
+    content.style.fontSize = currentFontSize + 'px';
+    localStorage.setItem('fontSize', currentFontSize);
+}
+
+// 设置行间距
+function setLineHeight(height) {
+    const content = document.getElementById('readingContent');
+    currentLineHeight = height;
+    content.style.lineHeight = height;
+    localStorage.setItem('lineHeight', height);
+}
+
+// 设置主题
+function setTheme(theme) {
+    const content = document.getElementById('readingContent');
+    const card = content.closest('.xhs-card');
+    
+    // 移除所有主题类
+    card.classList.remove('theme-light', 'theme-dark', 'theme-sepia');
+    
+    switch(theme) {
+        case 'dark':
+            card.style.background = '#2c3e50';
+            content.style.color = '#ecf0f1';
+            break;
+        case 'sepia':
+            card.style.background = '#f4f3e8';
+            content.style.color = '#5c4b37';
+            break;
+        default:
+            card.style.background = '#ffffff';
+            content.style.color = '#333333';
+    }
+    
+    localStorage.setItem('theme', theme);
+}
+
+// 键盘快捷键
+document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    switch(e.key) {
+        case 'ArrowLeft':
+            {% if prev_chapter %}
+            window.location.href = '/read/{{ novel.id }}/{{ prev_chapter.number }}';
+            {% endif %}
+            break;
+        case 'ArrowRight':
+            {% if next_chapter %}
+            window.location.href = '/read/{{ novel.id }}/{{ next_chapter.number }}';
+            {% endif %}
+            break;
+        case '=':
+        case '+':
+            if (e.ctrlKey) {
+                e.preventDefault();
+                setFontSize('larger');
+            }
+            break;
+        case '-':
+            if (e.ctrlKey) {
+                e.preventDefault();
+                setFontSize('smaller');
+            }
+            break;
+    }
+});
+
+// 页面加载时恢复设置
+document.addEventListener('DOMContentLoaded', function() {
+    const savedFontSize = localStorage.getItem('fontSize');
+    const savedLineHeight = localStorage.getItem('lineHeight');
+    const savedTheme = localStorage.getItem('theme');
+    
+    if (savedFontSize) {
+        setFontSize(parseInt(savedFontSize));
+    }
+    
+    if (savedLineHeight) {
+        setLineHeight(parseFloat(savedLineHeight));
+    }
+    
+    if (savedTheme) {
+        setTheme(savedTheme);
+    }
+    
+    // 点击空白区域隐藏设置面板
+    document.addEventListener('click', function(e) {
+        const panel = document.getElementById('settingsPanel');
+        if (!panel.contains(e.target) && !e.target.closest('[onclick*="showSettings"]')) {
+            const card = panel.querySelector('.xhs-card');
+            if (card.style.display !== 'none') {
+                card.style.display = 'none';
+            }
+        }
+    });
+});
+
+// 自动保存阅读进度
+window.addEventListener('beforeunload', function() {
+    const progress = {
+        novel_id: {{ novel.id }},
+        chapter_number: {{ chapter.number }},
+        scroll_position: window.pageYOffset,
+        timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('reading_progress', JSON.stringify(progress));
+});
+</script>
+
+<style>
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .reading-content {
+        font-size: 16px !important;
+        padding: 20px !important;
+    }
+    
+    body {
+        padding-bottom: 80px; /* 为底部导航栏留出空间 */
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,132 @@
+{
+  "update_time": "2025-07-22T16:39:30.595778",
+  "total_count": 6,
+  "novels": [
+    {
+      "id": "1045191725",
+      "title": "旧域怪诞",
+      "author": "未知作者",
+      "category": "都市灵异",
+      "description": "夜幕降临，古老的街道上只有几盏昏黄的路灯在摇曳。林墨推开那扇吱呀作响的木门，走进了这家名为'旧域'的古书店...",
+      "cover": "https://via.placeholder.com/300x400/667eea/ffffff?text=旧域怪诞",
+      "tags": [
+        "都市",
+        "灵异",
+        "悬疑",
+        "守夜人"
+      ],
+      "status": "连载中",
+      "word_count": 156000,
+      "chapters": 45,
+      "rating": 4.8,
+      "views": 128000,
+      "likes": 8900,
+      "comments": 1200
+    },
+    {
+      "id": "1124168",
+      "title": "斗破苍穹",
+      "author": "天蚕土豆",
+      "category": "玄幻奇幻",
+      "description": "这里是斗气大陆，没有花俏的魔法，有的，仅仅是繁衍到巅峰的斗气！在这个世界，要想成为那站在大陆巅峰的斗帝强者...",
+      "cover": "https://via.placeholder.com/300x400/764ba2/ffffff?text=斗破苍穹",
+      "tags": [
+        "玄幻",
+        "热血",
+        "升级",
+        "炼药"
+      ],
+      "status": "已完结",
+      "word_count": 5400000,
+      "chapters": 1648,
+      "rating": 4.9,
+      "views": 9800000,
+      "likes": 456000,
+      "comments": 89000
+    },
+    {
+      "id": "1003354631",
+      "title": "完美世界",
+      "author": "辰东",
+      "category": "玄幻奇幻",
+      "description": "一粒尘可填海，一根草斩尽日月星辰，弹指间天翻地覆。群雄并起，万族林立，诸圣争霸，乱天动地...",
+      "cover": "https://via.placeholder.com/300x400/f093fb/ffffff?text=完美世界",
+      "tags": [
+        "玄幻",
+        "热血",
+        "仙侠",
+        "成长"
+      ],
+      "status": "已完结",
+      "word_count": 7200000,
+      "chapters": 1928,
+      "rating": 4.7,
+      "views": 12000000,
+      "likes": 678000,
+      "comments": 156000
+    },
+    {
+      "id": "1010868264",
+      "title": "诡秘之主",
+      "author": "爱潜水的乌贼",
+      "category": "奇幻玄幻",
+      "description": "蒸汽与机械的时代，谁能触及非凡？历史和黑暗的迷雾里，又是谁在耳语？我从诡秘中醒来，睁眼看见这个世界...",
+      "cover": "https://via.placeholder.com/300x400/4facfe/ffffff?text=诡秘之主",
+      "tags": [
+        "奇幻",
+        "克苏鲁",
+        "蒸汽朋克",
+        "神秘"
+      ],
+      "status": "已完结",
+      "word_count": 3800000,
+      "chapters": 1394,
+      "rating": 4.9,
+      "views": 8500000,
+      "likes": 567000,
+      "comments": 234000
+    },
+    {
+      "id": "1887208",
+      "title": "遮天",
+      "author": "辰东",
+      "category": "玄幻奇幻",
+      "description": "冰冷与黑暗并存的宇宙深处，九具庞大的龙尸拉着一口青铜古棺，亘古长存。这是太空探测器在枯寂的宇宙中捕捉到的一幅极其震撼的画面...",
+      "cover": "https://via.placeholder.com/300x400/00d4aa/ffffff?text=遮天",
+      "tags": [
+        "玄幻",
+        "修仙",
+        "热血",
+        "古风"
+      ],
+      "status": "已完结",
+      "word_count": 6900000,
+      "chapters": 1875,
+      "rating": 4.8,
+      "views": 15000000,
+      "likes": 789000,
+      "comments": 298000
+    },
+    {
+      "id": "1234567",
+      "title": "全职高手",
+      "author": "蝴蝶蓝",
+      "category": "游戏竞技",
+      "description": "网游荣耀中被誉为教科书级别的顶尖高手，因为种种原因遭到俱乐部的驱逐，离开职业圈的他寄身于一家网吧成了一个小小的网管...",
+      "cover": "https://via.placeholder.com/300x400/ff6b6b/ffffff?text=全职高手",
+      "tags": [
+        "游戏",
+        "竞技",
+        "热血",
+        "团队"
+      ],
+      "status": "已完结",
+      "word_count": 5300000,
+      "chapters": 1728,
+      "rating": 4.6,
+      "views": 7800000,
+      "likes": 345000,
+      "comments": 167000
+    }
+  ]
+}

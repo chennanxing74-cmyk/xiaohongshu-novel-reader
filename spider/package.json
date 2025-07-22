@@ -1,0 +1,31 @@
+{
+  "name": "spider-novel-reader",
+  "version": "1.0.0",
+  "description": "Spider小说阅读器项目 - 完整的小说爬取、处理和阅读系统",
+  "main": "xiaohongshu_reader.py",
+  "scripts": {
+    "start": "python xiaohongshu_reader.py",
+    "dev": "cd xiaohongshu_app && python server.py",
+    "crawler": "python simple_qidian_crawler.py",
+    "generate": "python novel_generator.py"
+  },
+  "keywords": [
+    "novel",
+    "reader",
+    "crawler",
+    "spider",
+    "xiaohongshu",
+    "pwa",
+    "flask"
+  ],
+  "author": "Spider Team",
+  "license": "MIT",
+  "homepage": "https://chennanxing74-cmyk.github.io/spider-novel-reader/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chennanxing74-cmyk/spider-novel-reader.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chennanxing74-cmyk/spider-novel-reader/issues"
+  }
+}

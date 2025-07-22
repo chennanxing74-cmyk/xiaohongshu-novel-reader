@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小红书风格小说阅读器</title>
+    <meta name="description" content="发现好小说，享受阅读时光">
+    <meta name="keywords" content="小说,阅读,小红书,移动端">
+    
+    <!-- PWA配置 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff2442">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="小说阅读器">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <!-- 样式文件 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div id="loading" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">加载中...</span>
+            </div>
+            <p class="mt-3">正在加载精彩内容...</p>
+        </div>
+    </div>
+
+    <!-- 主导航 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-gradient-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold" href="#" onclick="showHome()">
+                <i class="fas fa-book-open me-2"></i>小说阅读器
+            </a>
+            <div class="navbar-nav ms-auto">
+                <button class="btn btn-outline-light btn-sm" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="container-fluid px-0">
+        <!-- 首页 -->
+        <div id="home-page" class="page active">
+            <!-- 搜索栏 -->
+            <div class="search-section">
+                <div class="container py-4">
+                    <div class="search-box">
+                        <div class="input-group">
+                            <input type="text" id="search-input" class="form-control" 
+                                   placeholder="搜索你喜欢的小说..." onkeyup="handleSearch(event)">
+                            <button class="btn btn-primary" onclick="performSearch()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分类筛选 -->
+            <div class="category-section">
+                <div class="container">
+                    <div class="category-tabs">
+                        <button class="category-btn active" data-category="all" onclick="filterByCategory('all')">
+                            全部
+                        </button>
+                        <button class="category-btn" data-category="玄幻" onclick="filterByCategory('玄幻')">
+                            玄幻
+                        </button>
+                        <button class="category-btn" data-category="都市" onclick="filterByCategory('都市')">
+                            都市
+                        </button>
+                        <button class="category-btn" data-category="游戏" onclick="filterByCategory('游戏')">
+                            游戏
+                        </button>
+                        <button class="category-btn" data-category="奇幻" onclick="filterByCategory('奇幻')">
+                            奇幻
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 小说列表 -->
+            <div class="novels-section">
+                <div class="container">
+                    <div class="row" id="novels-grid">
+                        <!-- 小说卡片将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 小说详情页 -->
+        <div id="detail-page" class="page">
+            <div class="detail-header">
+                <button class="btn btn-link text-white" onclick="showHome()">
+                    <i class="fas fa-arrow-left"></i> 返回
+                </button>
+            </div>
+            <div class="container">
+                <div class="novel-detail-card">
+                    <div class="row">
+                        <div class="col-4">
+                            <img id="detail-cover" src="" alt="封面" class="img-fluid rounded">
+                        </div>
+                        <div class="col-8">
+                            <h3 id="detail-title" class="fw-bold mb-2"></h3>
+                            <p id="detail-author" class="text-muted mb-2"></p>
+                            <div id="detail-tags" class="mb-3"></div>
+                            <p id="detail-description" class="small"></p>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-lg" onclick="startReading()">
+                                    <i class="fas fa-play me-2"></i>开始阅读
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="toggleFavorite()">
+                                    <i class="far fa-heart" id="favorite-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章节列表 -->
+                <div class="chapters-section mt-4">
+                    <h5 class="mb-3">章节目录</h5>
+                    <div id="chapters-list" class="chapters-grid">
+                        <!-- 章节列表将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 阅读页面 -->
+        <div id="reading-page" class="page">
+            <div class="reading-header">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-link text-white" onclick="showDetail()">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <span id="reading-title" class="text-white fw-bold"></span>
+                        <button class="btn btn-link text-white" onclick="toggleReadingMenu()">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reading-content">
+                <div class="container">
+                    <div id="chapter-content" class="chapter-text">
+                        <!-- 章节内容将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="reading-footer">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-outline-light" onclick="previousChapter()" id="prev-btn">
+                            <i class="fas fa-chevron-left me-1"></i>上一章
+                        </button>
+                        <span id="chapter-info" class="text-white small"></span>
+                        <button class="btn btn-outline-light" onclick="nextChapter()" id="next-btn">
+                            下一章<i class="fas fa-chevron-right ms-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阅读设置菜单 -->
+            <div id="reading-menu" class="reading-menu">
+                <div class="menu-content">
+                    <h6 class="mb-3">阅读设置</h6>
+                    
+                    <div class="setting-group">
+                        <label>字体大小</label>
+                        <div class="font-size-controls">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="adjustFontSize(-1)">A-</button>
+                            <span id="font-size-display">16px</span>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="adjustFontSize(1)">A+</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>背景主题</label>
+                        <div class="theme-controls">
+                            <button class="theme-btn" data-theme="light" onclick="setReadingTheme('light')">
+                                <div class="theme-preview light"></div>
+                                <span>日间</span>
+                            </button>
+                            <button class="theme-btn" data-theme="dark" onclick="setReadingTheme('dark')">
+                                <div class="theme-preview dark"></div>
+                                <span>夜间</span>
+                            </button>
+                            <button class="theme-btn" data-theme="sepia" onclick="setReadingTheme('sepia')">
+                                <div class="theme-preview sepia"></div>
+                                <span>护眼</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <button class="btn btn-primary w-100" onclick="showChapterList()">
+                            <i class="fas fa-list me-2"></i>章节目录
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="showHome()">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="nav-item" onclick="showFavorites()">
+            <i class="fas fa-heart"></i>
+            <span>收藏</span>
+        </div>
+        <div class="nav-item" onclick="showHistory()">
+            <i class="fas fa-history"></i>
+            <span>历史</span>
+        </div>
+        <div class="nav-item" onclick="showSettings()">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </nav>
+
+    <!-- Toast提示 -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert">
+            <div class="toast-body">
+                <span id="toast-message"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    
+    <!-- Service Worker注册 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js')
+                    .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
