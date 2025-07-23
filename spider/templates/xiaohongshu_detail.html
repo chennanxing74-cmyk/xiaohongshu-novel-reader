@@ -1,0 +1,321 @@
+{% extends "xiaohongshu_base.html" %}
+
+{% block title %}{{ novel.title }} - 小红书风格小说详情{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- 小说详情头部 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="xhs-card">
+                <div class="row g-0">
+                    <!-- 封面图片 -->
+                    <div class="col-md-4">
+                        <div class="position-relative">
+                            <img src="{{ novel.cover }}" class="img-fluid rounded-start h-100" 
+                                 alt="{{ novel.title }}" style="object-fit: cover; min-height: 400px;">
+                            
+                            <!-- 评分徽章 -->
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 60px; height: 60px;">
+                                    <div class="text-center">
+                                        <div class="fw-bold">{{ novel.rating }}</div>
+                                        <small style="font-size: 0.7rem;">评分</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 小说信息 -->
+                    <div class="col-md-8">
+                        <div class="card-body p-4">
+                            <!-- 标题和作者 -->
+                            <h1 class="card-title xhs-gradient-text mb-3">{{ novel.title }}</h1>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://via.placeholder.com/50x50/ff2442/ffffff?text={{ novel.author[0] }}" 
+                                     class="xhs-avatar me-3">
+                                <div>
+                                    <h5 class="mb-0">{{ novel.author }}</h5>
+                                    <small class="text-muted">知名作者</small>
+                                </div>
+                            </div>
+                            
+                            <!-- 标签 -->
+                            <div class="mb-3">
+                                <span class="xhs-tag">{{ novel.category }}</span>
+                                {% for tag in novel.tags %}
+                                <span class="xhs-tag">{{ tag }}</span>
+                                {% endfor %}
+                                <span class="xhs-tag">{{ novel.status }}</span>
+                            </div>
+                            
+                            <!-- 统计数据 -->
+                            <div class="row text-center mb-4">
+                                <div class="col-3">
+                                    <div class="h4 mb-0 text-primary">{{ novel.chapters }}</div>
+                                    <small class="text-muted">章节</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="h4 mb-0 text-success">{{ "%.1f"|format(novel.word_count / 10000) }}万</div>
+                                    <small class="text-muted">字数</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="h4 mb-0 text-info">{{ "%.1f"|format(novel.views / 10000) }}万</div>
+                                    <small class="text-muted">阅读</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="h4 mb-0 text-warning">{{ "%.1f"|format(novel.likes / 1000) }}K</div>
+                                    <small class="text-muted">点赞</small>
+                                </div>
+                            </div>
+                            
+                            <!-- 操作按钮 -->
+                            <div class="d-flex gap-2 mb-3">
+                                <a href="/read/{{ novel.id }}/1" class="xhs-btn xhs-btn-primary flex-fill">
+                                    <i class="fas fa-play"></i> 开始阅读
+                                </a>
+                                <button class="xhs-btn xhs-btn-outline" onclick="likeNovel('{{ novel.id }}', this)">
+                                    <i class="fas fa-heart xhs-heart"></i> 点赞
+                                </button>
+                                <button class="xhs-btn xhs-btn-outline" onclick="collectNovel('{{ novel.id }}')">
+                                    <i class="fas fa-bookmark"></i> 收藏
+                                </button>
+                                <button class="xhs-btn xhs-btn-outline" onclick="shareNovel('{{ novel.id }}')">
+                                    <i class="fas fa-share-alt"></i> 分享
+                                </button>
+                            </div>
+                            
+                            <!-- 小红书风格互动数据 -->
+                            <div class="xhs-stats">
+                                <div class="stat-item">
+                                    <i class="fas fa-heart"></i>
+                                    <span>{{ novel.likes }} 点赞</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-comment"></i>
+                                    <span>{{ novel.comments }} 评论</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-bookmark"></i>
+                                    <span>{{ (novel.likes * 0.3)|int }} 收藏</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-share"></i>
+                                    <span>{{ (novel.likes * 0.1)|int }} 分享</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- 主要内容区域 -->
+        <div class="col-lg-8">
+            <!-- 小说简介 -->
+            <div class="xhs-card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-book-open"></i> 作品简介
+                    </h5>
+                    <p class="card-text" style="line-height: 1.8;">{{ novel.description }}</p>
+                </div>
+            </div>
+            
+            <!-- 章节列表 -->
+            <div class="xhs-card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list"></i> 章节目录
+                    </h5>
+                    <span class="badge bg-primary rounded-pill">{{ chapters|length }} 章</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for chapter in chapters %}
+                        <a href="/read/{{ novel.id }}/{{ chapter.number }}" 
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-secondary me-2">{{ chapter.number }}</span>
+                                {{ chapter.title }}
+                                {% if chapter.is_vip %}
+                                <span class="badge bg-warning ms-2">VIP</span>
+                                {% endif %}
+                            </div>
+                            <div class="text-muted small">
+                                <i class="fas fa-file-alt"></i> {{ "%.1f"|format(chapter.word_count / 1000) }}K字
+                                <span class="ms-2">{{ chapter.update_time }}</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 评论区域 -->
+            <div class="xhs-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-comments"></i> 读者评论 ({{ comments|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for comment in comments %}
+                    <div class="d-flex mb-3 {% if not loop.last %}border-bottom pb-3{% endif %}">
+                        <img src="{{ comment.avatar }}" class="xhs-avatar me-3">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-0">{{ comment.username }}</h6>
+                                    <small class="text-muted">Lv.{{ comment.level }} · {{ comment.time_ago }}</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger" onclick="likeComment(this)">
+                                    <i class="fas fa-heart"></i> {{ comment.likes }}
+                                </button>
+                            </div>
+                            <p class="mb-0">{{ comment.content }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- 评论输入框 -->
+                    <div class="mt-4">
+                        <div class="d-flex gap-2">
+                            <img src="https://via.placeholder.com/40x40/667eea/ffffff?text=我" class="xhs-avatar">
+                            <div class="flex-grow-1">
+                                <textarea class="form-control" rows="3" placeholder="写下你的想法..."></textarea>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <div class="text-muted small">
+                                        <i class="fas fa-smile"></i> 表情
+                                        <i class="fas fa-image ms-2"></i> 图片
+                                    </div>
+                                    <button class="xhs-btn xhs-btn-primary btn-sm">
+                                        <i class="fas fa-paper-plane"></i> 发布
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 侧边栏 -->
+        <div class="col-lg-4">
+            <!-- 相关推荐 -->
+            <div class="xhs-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-thumbs-up"></i> 相关推荐
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% for related in related_novels %}
+                    <div class="d-flex p-3 {% if not loop.last %}border-bottom{% endif %}">
+                        <img src="{{ related.cover }}" class="rounded me-3" 
+                             style="width: 60px; height: 80px; object-fit: cover;">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">
+                                <a href="/novel/{{ related.id }}" class="text-decoration-none">
+                                    {{ related.title }}
+                                </a>
+                            </h6>
+                            <p class="text-muted small mb-1">{{ related.author }}</p>
+                            <div class="xhs-stats">
+                                <div class="stat-item">
+                                    <i class="fas fa-star"></i>
+                                    <span>{{ related.rating }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-eye"></i>
+                                    <span>{{ "%.1f"|format(related.views / 10000) }}万</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- 作者信息 -->
+            <div class="xhs-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-edit"></i> 作者信息
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <img src="https://via.placeholder.com/80x80/ff2442/ffffff?text={{ novel.author[0] }}" 
+                         class="xhs-avatar mb-3" style="width: 80px; height: 80px;">
+                    <h5>{{ novel.author }}</h5>
+                    <p class="text-muted">知名{{ novel.category }}作者</p>
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <div class="h6 mb-0">{{ [3, 5, 8, 12, 15]|random }}</div>
+                            <small class="text-muted">作品</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="h6 mb-0">{{ [50, 80, 120, 200]|random }}万</div>
+                            <small class="text-muted">粉丝</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="h6 mb-0">{{ [500, 800, 1200, 2000]|random }}万</div>
+                            <small class="text-muted">获赞</small>
+                        </div>
+                    </div>
+                    <button class="xhs-btn xhs-btn-primary w-100">
+                        <i class="fas fa-plus"></i> 关注作者
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 点赞评论
+function likeComment(element) {
+    const heartIcon = element.querySelector('i');
+    const countText = element.childNodes[2];
+    
+    if (heartIcon.classList.contains('liked')) {
+        heartIcon.classList.remove('liked');
+        element.classList.remove('btn-danger');
+        element.classList.add('btn-outline-danger');
+    } else {
+        heartIcon.classList.add('liked');
+        element.classList.remove('btn-outline-danger');
+        element.classList.add('btn-danger');
+        
+        // 增加点赞数
+        const currentCount = parseInt(countText.textContent.trim());
+        countText.textContent = ' ' + (currentCount + 1);
+    }
+}
+
+// 分享功能
+function shareNovel(novelId) {
+    const url = window.location.href;
+    const title = document.querySelector('h1').textContent;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            text: '推荐一本超棒的小说给你！',
+            url: url
+        });
+    } else {
+        navigator.clipboard.writeText(url).then(() => {
+            showToast('链接已复制到剪贴板！', 'success');
+        });
+    }
+}
+</script>
+{% endblock %}

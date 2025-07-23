@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}小红书风格小说阅读{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --xhs-red: #ff2442;
+            --xhs-pink: #ff6b9d;
+            --xhs-orange: #ff8a65;
+            --xhs-yellow: #ffb74d;
+            --xhs-bg: #f8f8f8;
+            --xhs-card-bg: #ffffff;
+            --xhs-text: #333333;
+            --xhs-text-light: #666666;
+            --xhs-border: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--xhs-bg);
+            color: var(--xhs-text);
+            line-height: 1.6;
+        }
+        
+        /* 小红书风格导航栏 */
+        .xhs-navbar {
+            background: linear-gradient(135deg, var(--xhs-red), var(--xhs-pink));
+            box-shadow: 0 2px 20px rgba(255, 36, 66, 0.3);
+            border: none;
+            padding: 15px 0;
+        }
+        
+        .xhs-navbar .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .xhs-navbar .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            border-radius: 20px;
+            padding: 8px 16px !important;
+            transition: all 0.3s ease;
+        }
+        
+        .xhs-navbar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white !important;
+        }
+        
+        /* 小红书风格搜索框 */
+        .xhs-search {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            padding: 10px 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .xhs-search::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .xhs-search:focus {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+        }
+        
+        /* 小红书风格卡片 */
+        .xhs-card {
+            background: var(--xhs-card-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .xhs-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 小红书风格按钮 */
+        .xhs-btn {
+            border-radius: 25px;
+            font-weight: 500;
+            padding: 10px 25px;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .xhs-btn-primary {
+            background: linear-gradient(135deg, var(--xhs-red), var(--xhs-pink));
+            color: white;
+        }
+        
+        .xhs-btn-primary:hover {
+            background: linear-gradient(135deg, var(--xhs-pink), var(--xhs-red));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 36, 66, 0.4);
+            color: white;
+        }
+        
+        .xhs-btn-outline {
+            background: transparent;
+            border: 2px solid var(--xhs-red);
+            color: var(--xhs-red);
+        }
+        
+        .xhs-btn-outline:hover {
+            background: var(--xhs-red);
+            color: white;
+        }
+        
+        /* 小红书风格标签 */
+        .xhs-tag {
+            background: linear-gradient(135deg, var(--xhs-orange), var(--xhs-yellow));
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 2px;
+            display: inline-block;
+        }
+        
+        /* 小红书风格统计数据 */
+        .xhs-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--xhs-text-light);
+            font-size: 0.9rem;
+        }
+        
+        .xhs-stats .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .xhs-stats .stat-item i {
+            color: var(--xhs-red);
+        }
+        
+        /* 小红书风格头像 */
+        .xhs-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--xhs-pink);
+            object-fit: cover;
+        }
+        
+        /* 小红书风格瀑布流 */
+        .xhs-masonry {
+            column-count: 3;
+            column-gap: 20px;
+        }
+        
+        @media (max-width: 992px) {
+            .xhs-masonry {
+                column-count: 2;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .xhs-masonry {
+                column-count: 1;
+            }
+        }
+        
+        .xhs-masonry-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+        }
+        
+        /* 小红书风格渐变背景 */
+        .xhs-gradient-bg {
+            background: linear-gradient(135deg, 
+                var(--xhs-red) 0%, 
+                var(--xhs-pink) 25%, 
+                var(--xhs-orange) 50%, 
+                var(--xhs-yellow) 75%, 
+                var(--xhs-pink) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* 小红书风格加载动画 */
+        .xhs-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 36, 66, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--xhs-red);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 小红书风格阴影效果 */
+        .xhs-shadow {
+            box-shadow: 0 10px 30px rgba(255, 36, 66, 0.2);
+        }
+        
+        /* 小红书风格文本渐变 */
+        .xhs-gradient-text {
+            background: linear-gradient(135deg, var(--xhs-red), var(--xhs-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .xhs-navbar {
+                padding: 10px 0;
+            }
+            
+            .xhs-card {
+                margin-bottom: 15px;
+            }
+            
+            .xhs-btn {
+                padding: 8px 20px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* 小红书风格动画 */
+        .xhs-fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 小红书风格心形点赞 */
+        .xhs-heart {
+            color: #ccc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .xhs-heart:hover,
+        .xhs-heart.liked {
+            color: var(--xhs-red);
+            transform: scale(1.2);
+        }
+        
+        /* 小红书风格分享按钮 */
+        .xhs-share {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .xhs-share:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- 小红书风格导航栏 -->
+    <nav class="navbar navbar-expand-lg xhs-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-book-heart"></i> 小红书风格小说
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home"></i> 首页
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/?category=玄幻">
+                            <i class="fas fa-magic"></i> 玄幻
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/?category=都市">
+                            <i class="fas fa-city"></i> 都市
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/?category=游戏">
+                            <i class="fas fa-gamepad"></i> 游戏
+                        </a>
+                    </li>
+                </ul>
+                
+                <form class="d-flex" method="GET" action="/">
+                    <input class="form-control xhs-search me-2" type="search" 
+                           name="search" placeholder="搜索你喜欢的小说..." 
+                           value="{{ request.args.get('search', '') }}">
+                    <button class="btn xhs-btn xhs-btn-outline" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主要内容区域 -->
+    <main class="container-fluid py-4">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- 小红书风格浮动按钮 -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1000;">
+        <div class="d-flex flex-column gap-2">
+            <button class="xhs-share" onclick="scrollToTop()" title="回到顶部">
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            <button class="xhs-share" onclick="toggleTheme()" title="切换主题">
+                <i class="fas fa-palette"></i>
+            </button>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 小红书风格交互效果
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+        }
+        
+        // 点赞功能
+        function likeNovel(novelId, element) {
+            fetch(`/api/like/${novelId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        element.classList.add('liked');
+                        const countElement = element.nextElementSibling;
+                        if (countElement) {
+                            countElement.textContent = data.likes;
+                        }
+                        showToast('点赞成功！', 'success');
+                    }
+                })
+                .catch(error => console.error('点赞失败:', error));
+        }
+        
+        // 收藏功能
+        function collectNovel(novelId) {
+            fetch(`/api/collect/${novelId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                    }
+                })
+                .catch(error => console.error('收藏失败:', error));
+        }
+        
+        // 小红书风格提示消息
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} position-fixed`;
+            toast.style.cssText = 'top: 100px; right: 20px; z-index: 1050; border-radius: 15px;';
+            toast.innerHTML = `
+                <i class="fas fa-heart"></i> ${message}
+                <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
+        }
+        
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.xhs-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('xhs-fade-in');
+            });
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
